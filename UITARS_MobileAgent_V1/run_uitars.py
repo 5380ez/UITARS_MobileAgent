@@ -7,24 +7,25 @@ import sys
 from logging.handlers import RotatingFileHandler
 from PIL import Image
 from MobileAgent.api import encode_image,inference_chat_uitars
-from MobileAgent.controller import get_screenshot, type, execute_action
+from MobileAgent.controller import get_screenshot, type, execute_action, disable_adbkeyboard, enable_adbkeyboard
 from MobileAgent.chat import init_action_chat_uitars, add_response_uitars, add_box_token
-from codes.utils import parse_action_to_structure_output,parsing_response_to_pyautogui_code,convert_coordinates
-
+from codes.utils import parse_action_to_structure_output,convert_coordinates
+import io
+import base64
 ####################################### Edit your Setting #########################################
 # Your ADB path
-adb_path = "/home/hello/ww/android_sdk/platform-tools/adb"
+adb_path = "/mnt/c/Android/platform-tools/adb.exe"
 
 # Your instruction
-instruction = "在抖音中找到一个关于大熊猫的视频，转发给QQ的楚河"
+instruction = "打开微信，给CXZ发送你好，这是一条测试消息"
 
 # Your model
-uitars_version = "1.5"
-model_name = 'ij5/uitars'
-API_url_uitars = "http://127.0.0.1:8000/v1/chat/completions"
+uitars_version = "2.0"
+model_name = 'qwen3-vl-flash-2025-10-15'
+API_url_uitars = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
 
 # Your model API Token
-token_uitars = "uitars-secret-key"
+token_uitars = ""
 
 #设置UITARS可以查看最近的多少步的信息
 history_n = 5
@@ -84,6 +85,7 @@ error_flag = False
 
 ##程序开始运行
 iter = 0
+current_ime = enable_adbkeyboard(adb_path)
 while True:
     iter += 1
     if iter == 1:
@@ -162,12 +164,12 @@ while True:
 
     if uitars_version == "1.5":
         model_type = "qwen25vl"
-    elif uitars_version == "1.0":
-        model_type = "qwen2vl"
+    elif uitars_version == "2.0":
+        model_type = "qwen3vl"
     else:
         print(f"uitars_version:{uitars_version} is not supported.")
     mock_response_dict = parse_action_to_structure_output(action_pre, 1000, height, width,model_type)
-    parsed_pyautogui_code = parsing_response_to_pyautogui_code(mock_response_dict, height,width)
+    # parsed_pyautogui_code = parsing_response_to_pyautogui_code(mock_response_dict, height,width)                      #已弃用
     action = convert_coordinates(mock_response_dict,height, width, model_type=model_type)
     actions.append(action)
 
@@ -190,3 +192,5 @@ while True:
     os.mkdir(temp_file)
 
     os.remove(last_screenshot_file)
+
+disable_adbkeyboard(adb_path,current_ime)

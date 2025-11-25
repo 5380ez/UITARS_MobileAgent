@@ -1,5 +1,5 @@
 import copy
-from MobileAgent.api import encode_image
+from UITARS_MobileAgent_V1.MobileAgent.api import encode_image
 from fontTools.ttLib.tables.ttProgram import instructions
 import re
 

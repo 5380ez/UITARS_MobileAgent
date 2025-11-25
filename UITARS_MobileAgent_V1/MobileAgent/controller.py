@@ -4,6 +4,26 @@ import subprocess
 from PIL import Image
 import ast,re
 
+def enable_adbkeyboard(adb_path):
+    # 读取当前默认输入法（恢复时要用）
+    command = f"{adb_path} shell settings get secure default_input_method"
+    result = subprocess.run(command, capture_output=True, text=True, shell=True)
+    current_ime = result.stdout.strip()
+    # 切换到 ADBKeyboard
+    command = f"{adb_path} shell ime set com.android.adbkeyboard/.AdbIME"
+    subprocess.run(command, capture_output=True, text=True, shell=True)
+    time.sleep(0.2)
+
+    print("ADBKeyboard 已启用")
+    return current_ime
+
+def disable_adbkeyboard(adb_path,current_ime):
+    # 恢复
+    command = f"{adb_path} shell ime set {current_ime}"
+    subprocess.run(command, capture_output=True, text=True, shell=True)
+    time.sleep(0.2)
+
+    print("输入法已恢复为:", current_ime)
 
 def get_screenshot(adb_path):
     command = adb_path + " shell rm /sdcard/screenshot.png"
