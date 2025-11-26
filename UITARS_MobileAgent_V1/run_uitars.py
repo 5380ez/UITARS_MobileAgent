@@ -25,7 +25,7 @@ model_name = 'qwen3-vl-flash-2025-10-15'
 API_url_uitars = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
 
 # Your model API Token
-token_uitars = ""
+token_uitars = "sk-03c1a9233ea44ee5bdff62b4a3f0c6be"
 
 #设置UITARS可以查看最近的多少步的信息
 history_n = 5
